@@ -6,12 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.webkit.WebView;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
     implements GraphFragment.OnFragmentInteractionListener,
@@ -30,7 +27,7 @@ public class MainActivity extends AppCompatActivity
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment fragment = graphFragment;
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.navigation_graph:
                     toolBar.setTitle(R.string.title_home);
                     fragment = graphFragment;
                     break;
