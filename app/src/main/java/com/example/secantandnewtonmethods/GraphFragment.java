@@ -78,7 +78,7 @@ public class GraphFragment extends Fragment {
         WebView webView = (WebView) view.findViewById(R.id.web_view);
 
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("https://www.desmos.com/calculator/itztksqj6f");
+        webView.loadUrl("https://www.desmos.com/calculator/queryoyim8");
     }
 
     // TODO: Rename method, update argument and hook method into UI event

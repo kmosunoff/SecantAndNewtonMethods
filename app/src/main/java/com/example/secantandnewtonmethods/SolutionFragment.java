@@ -2,11 +2,18 @@ package com.example.secantandnewtonmethods;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.net.DatagramPacket;
+import java.util.function.Function;
 
 
 /**
@@ -22,6 +29,10 @@ public class SolutionFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private final double a = 9.5;
+    private final double b = 10;
+    private final double eps = 1e-3;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -58,6 +69,14 @@ public class SolutionFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        TextView textView = (TextView) view.findViewById(R.id.result);
+        textView.append(Double.toString(solveWithNewtonsMethod()) + '\n');
+        textView.append(Double.toString(solveWithSecantMethod()) + '\n');
     }
 
     @Override
@@ -104,5 +123,66 @@ public class SolutionFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private double f(double x) {
+        return 0.3 * Math.cos(x) * Math.cos(x) - Math.log(x) + 2;
+    }
+
+    private double f1(double x) {
+        return -0.3 * Math.sin(2 * x) - 1/x;
+    }
+
+    private double f2(double x) {
+        return -0.6 * Math.cos(2 * x) + 1/x/x;
+    }
+
+    private boolean checkIfF1EqualsZero() {
+        for (double x = a; x <= b; x += eps) {
+            if (Math.abs(f1(x)) < eps) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkIfF2ChangesSign() {
+        for (double x = a + eps; x <= b; x += eps) {
+            if (f2(x) * f2(x - eps) < 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private double solveWithNewtonsMethod() {
+        double xPrev = b;
+        double xNext = xPrev - f(xPrev) / f1(xPrev);
+        if (checkIfF1EqualsZero()
+                || checkIfF2ChangesSign()
+                || f2(xPrev) * f(xPrev) < 0) {
+            return Double.NaN;
+        }
+        while (Math.abs(xPrev - xNext) >= eps) {
+            xPrev = xNext;
+            xNext = xPrev - f(xPrev) / f1(xPrev);
+        }
+        return xNext;
+    }
+
+    private double solveWithSecantMethod() {
+        if (checkIfF2ChangesSign()
+            || f(a) * f(b) > 0) {
+            return Double.NaN;
+        }
+        double x1 = a;
+        double x2 = b;
+        double x3 = x1 - f(x1) * (x2 - x1) / (f(x2) - f(x1));
+        while (Math.abs(x3 - x2) >= eps) {
+            x1 = x2;
+            x2 = x3;
+            x3 = x1 - f(x1) * (x2 - x1) / (f(x2) - f(x1));
+        }
+        return x3;
     }
 }
